@@ -388,16 +388,16 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 
   // these are the offsets to the probe relative to the extruder tip (Hotend - Probe)
-  #define X_PROBE_OFFSET_FROM_EXTRUDER -35
-  #define Y_PROBE_OFFSET_FROM_EXTRUDER -1
-  #define Z_PROBE_OFFSET_FROM_EXTRUDER -2
+  #define X_PROBE_OFFSET_FROM_EXTRUDER -40.74
+  #define Y_PROBE_OFFSET_FROM_EXTRUDER 0
+  #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.40
 
   #define Z_RAISE_BEFORE_HOMING 6       // (in mm) Raise Z before homing (G28) for Probe Clearance.
                                         // Be sure you have this distance over your Z_MAX_POS in case
 
   #define XY_TRAVEL_SPEED 8000         // X and Y axis travel speed between probes, in mm/min
 
-  #define Z_RAISE_BEFORE_PROBING 15    //How much the extruder will be raised before traveling to the first probing point.
+  #define Z_RAISE_BEFORE_PROBING 6    //How much the extruder will be raised before traveling to the first probing point.
   #define Z_RAISE_BETWEEN_PROBINGS 5  //How much the extruder will be raised when traveling from between next probing points
 
 
@@ -441,7 +441,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 //// MOVEMENT SETTINGS
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
-#define HOMING_FEEDRATE {50*60, 50*60, 150, 0}  // set the homing speeds (mm/min)
+#define HOMING_FEEDRATE {50*60, 50*60, 350, 0}  // set the homing speeds (mm/min)
 
 // default settings
 // Syncromesh (400*16)/(3.81*15)
