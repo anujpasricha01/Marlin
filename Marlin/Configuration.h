@@ -363,10 +363,10 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
   #ifdef AUTO_BED_LEVELING_GRID
 
     // set the rectangle in which to probe
-    #define LEFT_PROBE_BED_POSITION 15
-    #define RIGHT_PROBE_BED_POSITION 100
-    #define BACK_PROBE_BED_POSITION 70
-    #define FRONT_PROBE_BED_POSITION 20
+    #define LEFT_PROBE_BED_POSITION 30
+    #define RIGHT_PROBE_BED_POSITION 80
+    #define BACK_PROBE_BED_POSITION 80
+    #define FRONT_PROBE_BED_POSITION 30
 
      // set the number of grid points per dimension
      // I wouldn't see a reason to go above 3 (=9 probing points on the bed)
@@ -388,9 +388,9 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 
   // these are the offsets to the probe relative to the extruder tip (Hotend - Probe)
-  #define X_PROBE_OFFSET_FROM_EXTRUDER -40.74
+  #define X_PROBE_OFFSET_FROM_EXTRUDER -35.74//setting this to -40.74 breaks z safe homing
   #define Y_PROBE_OFFSET_FROM_EXTRUDER 0
-  #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.40
+  #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.80
 
   #define Z_RAISE_BEFORE_HOMING 6       // (in mm) Raise Z before homing (G28) for Probe Clearance.
                                         // Be sure you have this distance over your Z_MAX_POS in case
@@ -421,7 +421,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
   #ifdef Z_SAFE_HOMING
 
     #define Z_SAFE_HOMING_X_POINT (X_MAX_LENGTH/5)    // X point for Z homing when homing all axis (G28)
-    #define Z_SAFE_HOMING_Y_POINT (0)    // Y point for Z homing when homing all axis (G28)
+    #define Z_SAFE_HOMING_Y_POINT (Y_MAX_LENGTH/4)    // Y point for Z homing when homing all axis (G28)
 
   #endif
 
@@ -446,8 +446,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // default settings
 // Syncromesh (400*16)/(3.81*15)
 //e motor 200 steps/mm, 1/16th microstepping, 8.97mm diameter toothed extruder part
-//z motor 200 steps/revolution, 2mm/revolution, 1/4th microstepping
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {111.99468232964598,111.99468232964598,400,113.555366309}  // default steps per unit for Ultimaker
+//z motor 400 steps/revolution, 2.1mm/revolution, 1/16th microstepping
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {111.99468232964598,111.99468232964598,3047.61904762,113.555366309}  // default steps per unit for Ultimaker
 #define DEFAULT_MAX_FEEDRATE          {140, 140, 1.5, 22}    // (mm/sec)
 #define DEFAULT_MAX_ACCELERATION      {3000,3000,50,1000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 #define DEFAULT_ACCELERATION          1200    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
