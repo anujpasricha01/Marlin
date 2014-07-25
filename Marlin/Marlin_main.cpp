@@ -154,6 +154,7 @@
 // M302 - Allow cold extrudes, or set the minimum extrude S<temperature>.
 // M303 - PID relay autotune S<temperature> sets the target temperature. (default target temperature = 150C)
 // M304 - Set bed PID parameters P I and D
+// M399 - Pause for component insertion (until a button is pressed)
 // M400 - Finish all moves
 // M401 - Lower z-probe if present
 // M402 - Raise z-probe if present
@@ -2691,6 +2692,18 @@ void process_commands()
       if (code_seen('S')) temp=code_value();
       if (code_seen('C')) c=code_value();
       PID_autotune(temp, e, c);
+    }
+    break;
+    case 399: // M399 Pause command
+    {
+      st_synchronize();
+      pinMode(RESUME_PIN, INPUT);
+      digitalWrite(RESUME_PIN, HIGH);
+      while (digitalRead(RESUME_PIN)) {
+        manage_heater();
+        manage_inactivity();
+        lcd_update();
+      }
     }
     break;
     case 400: // M400 finish all moves
