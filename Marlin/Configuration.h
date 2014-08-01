@@ -134,7 +134,7 @@
 // 110 is Pt100 with 1k pullup (non standard)
 // 70 is 500C thermistor for Pico hot end
 
-#define TEMP_SENSOR_0 6
+#define TEMP_SENSOR_0 5
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_BED 0 //we're not using heated bed
@@ -188,10 +188,10 @@
   #define PID_dT ((OVERSAMPLENR * 8.0)/(F_CPU / 64.0 / 256.0)) //sampling period of the temperature routine
 
 // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
-//Lewis group gantry
-    #define  DEFAULT_Kp 49.69
-    #define  DEFAULT_Ki 7.51
-    #define  DEFAULT_Kd 82.22
+//Lewis group gantry Bowden
+    #define  DEFAULT_Kp 32.11
+    #define  DEFAULT_Ki 3.31
+    #define  DEFAULT_Kd 77.86
 
 // MakerGear
 //    #define  DEFAULT_Kp 7.0
@@ -445,9 +445,9 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 // default settings
 // Syncromesh (400*16)/(3.81*15)
-//e motor 200 steps/mm, 1/16th microstepping, 8.97mm diameter toothed extruder part
+//e motor 400 steps/mm, 1/16th microstepping, 8.97mm diameter toothed extruder part
 //z motor 400 steps/revolution, 2.1mm/revolution, 1/16th microstepping
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {111.99468232964598,111.99468232964598,3047.61904762,113.555366309}  // default steps per unit for Ultimaker
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {111.99468232964598,111.99468232964598,3047.61904762,(113.555366309)*2.0}  // default steps per unit for Ultimaker
 #define DEFAULT_MAX_FEEDRATE          {140, 140, 1.5, 22}    // (mm/sec)
 #define DEFAULT_MAX_ACCELERATION      {3000,3000,50,1000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 #define DEFAULT_ACCELERATION          1200    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
