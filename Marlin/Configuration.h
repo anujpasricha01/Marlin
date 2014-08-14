@@ -188,10 +188,10 @@
   #define PID_dT ((OVERSAMPLENR * 8.0)/(F_CPU / 64.0 / 256.0)) //sampling period of the temperature routine
 
 // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
-//Lewis group gantry Bowden
-    #define  DEFAULT_Kp 29.60
-    #define  DEFAULT_Ki 2.93
-    #define  DEFAULT_Kd 74.68
+//Lewis group gantry Bowden with makergear and 12 volt 40 watt ceramic heater from e3d
+    #define  DEFAULT_Kp 26.31
+    #define  DEFAULT_Ki 1.67
+    #define  DEFAULT_Kd 103.44
 
 // MakerGear
 //    #define  DEFAULT_Kp 7.0
@@ -364,9 +364,9 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
     // set the rectangle in which to probe
     #define LEFT_PROBE_BED_POSITION 30
-    #define RIGHT_PROBE_BED_POSITION 80
-    #define BACK_PROBE_BED_POSITION 80
-    #define FRONT_PROBE_BED_POSITION 30
+    #define RIGHT_PROBE_BED_POSITION 100
+    #define BACK_PROBE_BED_POSITION 90
+    #define FRONT_PROBE_BED_POSITION 0
 
      // set the number of grid points per dimension
      // I wouldn't see a reason to go above 3 (=9 probing points on the bed)
@@ -448,10 +448,10 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //e motor 400 steps/mm, 1/16th microstepping, 8.97mm diameter toothed extruder part
 //z motor 400 steps/revolution, 2.1mm/revolution, 1/16th microstepping
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   {(111.99468232964598)*1.005,(111.99468232964598)*1.005,3047.61904762,(113.555366309)*2.0}  // correction factor from experience
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {111.99468232964598,111.99468232964598,3047.61904762,(113.555366309)*2.0}  // default steps per unit for Ultimaker
-#define DEFAULT_MAX_FEEDRATE          {200, 200, 1.5, 22}    // (mm/sec)
-#define DEFAULT_MAX_ACCELERATION      {3400,3400,50,1000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
-#define DEFAULT_ACCELERATION          1200    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {111.99468232964598,111.99468232964598,3047.61904762,(113.555366309)}  // default steps per unit for Ultimaker
+#define DEFAULT_MAX_FEEDRATE          {300, 300, 2.5, 22}    // (mm/sec)
+#define DEFAULT_MAX_ACCELERATION      {4000,4000,50,1000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
+#define DEFAULT_ACCELERATION          1400    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  500   // X, Y, Z and E max acceleration in mm/s^2 for retracts
 
 // Offset of the extruders (uncomment if using more than one and relying on firmware to position when changing).
