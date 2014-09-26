@@ -2323,7 +2323,7 @@ DaveX plan for Teensylu/printrboard-type pinouts (ref teensylu & sprinter) for a
 
 #ifdef COMPRESSOR
     #define COMPRESSOR_PWR       6
-    #define COMPRESSOR_READ     A5
+    #define COMPRESSOR_READ     19
 #endif
 
 #define DIGIPOTSS_PIN 38
