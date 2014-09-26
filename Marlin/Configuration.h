@@ -743,6 +743,15 @@ const bool Z_MAX_ENDSTOP_INVERTING = true; // set to true to invert the logic of
 //define BlinkM/CyzRgb Support
 //#define BLINKM
 
+
+/*
+* Compressor support
+*/
+#define COMPRESSOR
+#define COMPRESSOR_TARGET 400 // 20psi/50psi range * 2^10
+#define COMPRESSOR_TRIP 300
+
+
 /*********************************************************************\
 * R/C SERVO support
 * Sponsored by TrinityLabs, Reworked by codexmas

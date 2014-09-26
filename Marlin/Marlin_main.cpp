@@ -130,6 +130,10 @@
 // M127 - Solenoid Air Valve Closed (BariCUDA vent to atmospheric pressure by jmil)
 // M128 - EtoP Open (BariCUDA EtoP = electricity to air pressure transducer by jmil)
 // M129 - EtoP Closed (BariCUDA EtoP = electricity to air pressure transducer by jmil)
+// M131 - S<pressure analog val> , set compressor target value
+// M132 - S<pressure analog val> , set compressor trip value
+// M133 - Turn compressor on
+// M134 - Turn compressor off
 // M140 - Set bed target temp
 // M150 - Set BlinkM Color Output R: Red<0-255> U(!): Green<0-255> B: Blue<0-255> over i2c, G for green does not work.
 // M190 - Sxxx Wait for bed current temp to reach target temp. Waits only when heating
@@ -359,6 +363,12 @@ bool Stopped=false;
   Servo servos[NUM_SERVOS];
 #endif
 
+#ifdef COMPRESSOR
+  static unsigned int compressor_target = COMPRESSOR_TARGET;
+  static unsigned int compressor_trip = COMPRESSOR_TRIP;
+  static boolean compressor_enabled = false;
+#endif
+
 bool CooldownNoWait = true;
 bool target_direction;
 
@@ -570,6 +580,11 @@ void setup()
   pinMode(SERVO0_PIN, OUTPUT);
   digitalWrite(SERVO0_PIN, LOW); // turn it off
 #endif // Z_PROBE_SLED
+
+  #ifdef COMPRESSOR
+    pinMode(COMPRESSOR_READ, INPUT);
+    pinMode(COMPRESSOR_PWR, OUTPUT);
+  #endif
 }
 
 
@@ -2601,6 +2616,28 @@ Sigma_Exit:
       #endif
 	  break;
 
+
+    #ifdef COMPRESSOR
+    case 131: //M131 set compressor target value
+      if (code_seen('S'))
+      {
+        compressor_target = code_value();
+      }
+     break;
+    case 132: //M132 set compressor trip value
+      if (code_seen('S'))
+      {
+        compressor_trip = code_value();
+      }
+     break;
+    case 133: //M132 set compressor trip value
+      compressor_enabled = true;
+     break;
+    case 134: //M132 set compressor trip value
+      compressor_enabled = false;
+     break;
+    #endif
+
     case 82:
       axis_relative_modes[3] = false;
       break;
@@ -4247,6 +4284,17 @@ void manage_inactivity()
   #endif
   #ifdef TEMP_STAT_LEDS
       handle_status_leds();
+  #endif
+
+  #ifdef COMPRESSOR
+  if (compressor_enabled && analogRead(COMPRESSOR_READ) <= compressor_trip)
+  {
+    WRITE(COMPRESSOR_PWR, HIGH);
+  }
+  if (!compressor_enabled || analogRead(COMPRESSOR_READ) >= compressor_target)
+  {
+    WRITE(COMPRESSOR_PWR, LOW);
+  }
   #endif
   check_axes_activity();
 }

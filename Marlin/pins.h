@@ -2321,6 +2321,11 @@ DaveX plan for Teensylu/printrboard-type pinouts (ref teensylu & sprinter) for a
 #define E1_MS1_PIN 63
 #define E1_MS2_PIN 64
 
+#ifdef COMPRESSOR
+    #define COMPRESSOR_PWR       6
+    #define COMPRESSOR_READ     A5
+#endif
+
 #define DIGIPOTSS_PIN 38
 #define DIGIPOT_CHANNELS {4,5,3,0,1} // X Y Z E0 E1 digipot channels to stepper driver mapping
 
