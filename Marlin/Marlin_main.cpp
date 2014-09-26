@@ -3258,6 +3258,7 @@ Sigma_Exit:
       PID_autotune(temp, e, c);
     }
     break;
+
 	#ifdef SCARA
 	case 360:  // M360 SCARA Theta pos1
       SERIAL_ECHOLN(" Cal: Theta 0 ");
@@ -3357,6 +3358,20 @@ Sigma_Exit:
       }
       break;
 	#endif
+
+    case 399: // M399 Pause command
+    {
+      st_synchronize();
+      pinMode(RESUME_PIN, INPUT);
+      digitalWrite(RESUME_PIN, HIGH);
+      while (digitalRead(RESUME_PIN)) {
+            manage_heater();
+            manage_inactivity();
+            lcd_update();
+          }
+    }
+    break;
+
     case 400: // M400 finish all moves
     {
       st_synchronize();
