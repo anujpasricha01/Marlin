@@ -364,9 +364,9 @@ bool Stopped=false;
 #endif
 
 #ifdef COMPRESSOR
-  static unsigned int compressor_target = COMPRESSOR_TARGET;
-  static unsigned int compressor_trip = COMPRESSOR_TRIP;
-  static boolean compressor_enabled = false;
+  static int16_t compressor_target = COMPRESSOR_TARGET;
+  static int16_t compressor_trip = COMPRESSOR_TRIP;
+  static int compressor_enabled = false;
 #endif
 
 bool CooldownNoWait = true;
