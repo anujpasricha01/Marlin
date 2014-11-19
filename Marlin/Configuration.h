@@ -189,9 +189,9 @@
 
 // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 //Lewis group gantry
-    #define  DEFAULT_Kp 80.53
-    #define  DEFAULT_Ki 9.24
-    #define  DEFAULT_Kd 175.48
+    #define  DEFAULT_Kp 19.25
+    #define  DEFAULT_Ki 0.84
+    #define  DEFAULT_Kd 109.76
 
 // MakerGear
 //    #define  DEFAULT_Kp 7.0
