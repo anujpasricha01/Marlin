@@ -189,9 +189,14 @@
 
 // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 //Lewis group gantry
-    #define  DEFAULT_Kp 49.69
-    #define  DEFAULT_Ki 7.51
-    #define  DEFAULT_Kd 82.22
+//    #define  DEFAULT_Kp 49.69
+//    #define  DEFAULT_Ki 7.51
+//    #define  DEFAULT_Kd 82.22
+    
+//Leroy with orion hotend with 2x 12V 40W heaters from amazon prime
+    #define  DEFAULT_Kp 27.87
+    #define  DEFAULT_Ki 2.07
+    #define  DEFAULT_Kd 93.60
 
 // MakerGear
 //    #define  DEFAULT_Kp 7.0
