@@ -364,7 +364,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 //    Probe 3 arbitrary points on the bed (that aren't colinear)
 //    You must specify the X & Y coordinates of all 3 points
 
-  #define AUTO_BED_LEVELING_GRID
+  //#define AUTO_BED_LEVELING_GRID
   // with AUTO_BED_LEVELING_GRID, the bed is sampled in a
   // AUTO_BED_LEVELING_GRID_POINTSxAUTO_BED_LEVELING_GRID_POINTS grid
   // and least squares solution is calculated
@@ -379,7 +379,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
      // set the number of grid points per dimension
      // I wouldn't see a reason to go above 3 (=9 probing points on the bed)
-    #define AUTO_BED_LEVELING_GRID_POINTS 2
+    #define AUTO_BED_LEVELING_GRID_POINTS 3
 
 
   #else  // not AUTO_BED_LEVELING_GRID
@@ -388,7 +388,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
       #define ABL_PROBE_PT_1_X X_MIN_POS
       #define ABL_PROBE_PT_1_Y Y_MIN_POS
-      #define ABL_PROBE_PT_2_X X_MAXPOS/2
+      #define ABL_PROBE_PT_2_X X_MAX_POS/2
       #define ABL_PROBE_PT_2_Y Y_MAX_POS
       #define ABL_PROBE_PT_3_X X_MAX_POS
       #define ABL_PROBE_PT_3_Y Y_MIN_POS
