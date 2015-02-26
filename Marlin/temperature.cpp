@@ -141,8 +141,10 @@ static int maxttemp_raw[EXTRUDERS] = ARRAY_BY_EXTRUDERS( HEATER_0_RAW_HI_TEMP , 
 static int minttemp[EXTRUDERS] = ARRAY_BY_EXTRUDERS( 0, 0, 0 );
 static int maxttemp[EXTRUDERS] = ARRAY_BY_EXTRUDERS( 16383, 16383, 16383 );
 //static int bed_minttemp_raw = HEATER_BED_RAW_LO_TEMP; /* No bed mintemp error implemented?!? */
+#ifdef PNEUMATICS
 static int pneumatic_min_raw = PNEUMATIC_RAW_LO;
 static int pneumatic_max_raw = PNEUMATIC_RAW_HI;
+#endif
 #ifdef BED_MAXTEMP
 static int bed_maxttemp_raw = HEATER_BED_RAW_HI_TEMP;
 #endif
@@ -710,6 +712,7 @@ static float analog2tempBed(int raw) {
   #endif
 }
 
+#ifdef PNEUMATICS
 static float analog2valPneumatic(int raw) {
     float celsius = 0;
     byte i;
@@ -731,6 +734,7 @@ static float analog2valPneumatic(int raw) {
 
     return celsius;
 }
+#endif
 
 /* Called to get the raw values into the the actual temperatures. The raw values are created in interrupt context,
     and this function is called from normal context as it is too slow to run in interrupts and will block the stepper routine otherwise */
@@ -741,7 +745,9 @@ static void updateTemperaturesFromRawValues()
         current_temperature[e] = analog2temp(current_temperature_raw[e], e);
     }
     current_temperature_bed = analog2tempBed(current_temperature_bed_raw);
-    current_pneumatic = analog2valPneumatic(current_pneumatic_raw);
+    #ifdef PNEUMATICS
+        current_pneumatic = analog2valPneumatic(current_pneumatic_raw);
+    #endif
     #ifdef TEMP_SENSOR_1_AS_REDUNDANT
       redundant_temperature = analog2temp(redundant_temperature_raw, 1);
     #endif
@@ -949,25 +955,16 @@ void tp_init()
 #endif
   }
 #endif //BED_MAXTEMP
-}
 
 #ifdef PNEUMATIC_MIN
   while(analog2valPneumatic(pneumatic_min_raw) < PNEUMATIC_MIN) {
-#if PNEUMATIC_RAW_LO < PNEUMATIC_RAW_HI
     pneumatic_min_raw += OVERSAMPLENR;
-#else
-    pneumatic_min_raw -= OVERSAMPLENR;
-#endif
   }
+#endif //PNEUMATIC_MIN
 
-#endif //PNEUMATIC_MAX
 #ifdef PNEUMATIC_MAX
   while(analog2valPneumatic(pneumatic_max_raw) > PNEUMATIC_MAX) {
-#if PNEUMATIC_RAW_LO < PNEUMATIC_RAW_HI
     pneumatic_max_raw -= OVERSAMPLENR;
-#else
-    pneumatic_max_raw += OVERSAMPLENR;
-#endif
   }
 #endif //PNEUMATIC_MAX
 }
