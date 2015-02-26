@@ -39,10 +39,13 @@
 //===========================================================================
 int target_temperature[EXTRUDERS] = { 0 };
 int target_temperature_bed = 0;
+int target_value_pneumatic = 0;
 int current_temperature_raw[EXTRUDERS] = { 0 };
 float current_temperature[EXTRUDERS] = { 0.0 };
 int current_temperature_bed_raw = 0;
+int current_pneumatic_raw = 0;
 float current_temperature_bed = 0.0;
+float current_pneumatic = 0.0;
 #ifdef TEMP_SENSOR_1_AS_REDUNDANT
   int redundant_temperature_raw = 0;
   float redundant_temperature = 0.0;
@@ -67,6 +70,7 @@ float current_temperature_bed = 0.0;
 #endif
 
 unsigned char soft_pwm_bed;
+unsigned char soft_pwm_pneumatic;
   
 #ifdef BABYSTEPPING
   volatile int babystepsTodo[3]={0,0,0};
@@ -108,6 +112,10 @@ static volatile bool temp_meas_ready = false;
 #endif //PIDTEMPBED
   static unsigned char soft_pwm[EXTRUDERS];
 
+#ifdef PNEUMATICS
+  static unsigned long  previous_millis_pneumatic_value;
+#endif
+
 #ifdef FAN_SOFT_PWM
   static unsigned char soft_pwm_fan;
 #endif
@@ -133,6 +141,8 @@ static int maxttemp_raw[EXTRUDERS] = ARRAY_BY_EXTRUDERS( HEATER_0_RAW_HI_TEMP , 
 static int minttemp[EXTRUDERS] = ARRAY_BY_EXTRUDERS( 0, 0, 0 );
 static int maxttemp[EXTRUDERS] = ARRAY_BY_EXTRUDERS( 16383, 16383, 16383 );
 //static int bed_minttemp_raw = HEATER_BED_RAW_LO_TEMP; /* No bed mintemp error implemented?!? */
+static int pneumatic_min_raw = PNEUMATIC_RAW_LO;
+static int pneumatic_max_raw = PNEUMATIC_RAW_HI;
 #ifdef BED_MAXTEMP
 static int bed_maxttemp_raw = HEATER_BED_RAW_HI_TEMP;
 #endif
@@ -147,6 +157,7 @@ static int bed_maxttemp_raw = HEATER_BED_RAW_HI_TEMP;
 
 static float analog2temp(int raw, uint8_t e);
 static float analog2tempBed(int raw);
+static float analog2valPneumatic(int raw);
 static void updateTemperaturesFromRawValues();
 
 #ifdef WATCH_TEMP_PERIOD
@@ -517,6 +528,31 @@ void manage_heater()
     extruder_autofan_last_check = millis();
   }  
   #endif       
+
+  #ifdef PNEUMATICS
+  if (millis() - previous_millis_pneumatic_value > PNEUMATIC_CHECK_INTERVAL) {
+
+          previous_millis_pneumatic_value = millis();
+
+          // Check if value is within the correct band
+          if((current_pneumatic > PNEUMATIC_MIN) && (current_pneumatic < PNEUMATIC_MAX))
+          {
+            if(current_pneumatic > target_value_pneumatic + PNEUMATIC_HYSTERESIS)
+            {
+              soft_pwm_pneumatic = 0;
+            }
+            else if(current_pneumatic <= target_value_pneumatic - PNEUMATIC_HYSTERESIS)
+            {
+              soft_pwm_pneumatic = 255>>1;
+            }
+          }
+          else
+          {
+            soft_pwm_pneumatic = 0;
+            WRITE(PNEUMATIC_PUMP_PIN,LOW);
+          }
+  }
+  #endif //if PNEUMATICS
   
   #ifndef PIDTEMPBED
   if(millis() - previous_millis_bed_heater < BED_CHECK_INTERVAL)
@@ -674,6 +710,28 @@ static float analog2tempBed(int raw) {
   #endif
 }
 
+static float analog2valPneumatic(int raw) {
+    float celsius = 0;
+    byte i;
+
+    for (i=1; i<PNEUMATICTEMPTABLE_LEN; i++)
+    {
+      if (PGM_RD_W(PRESSURETABLE[i][0]) > raw)
+      {
+        celsius  = PGM_RD_W(PRESSURETABLE[i-1][1]) + 
+          (raw - PGM_RD_W(PRESSURETABLE[i-1][0])) * 
+          (float)(PGM_RD_W(PRESSURETABLE[i][1]) - PGM_RD_W(PRESSURETABLE[i-1][1])) /
+          (float)(PGM_RD_W(PRESSURETABLE[i][0]) - PGM_RD_W(PRESSURETABLE[i-1][0]));
+        break;
+      }
+    }
+
+    // Overflow: Set to last value in the table
+    if (i == PNEUMATICTEMPTABLE_LEN) celsius = PGM_RD_W(PRESSURETABLE[i-1][1]);
+
+    return celsius;
+}
+
 /* Called to get the raw values into the the actual temperatures. The raw values are created in interrupt context,
     and this function is called from normal context as it is too slow to run in interrupts and will block the stepper routine otherwise */
 static void updateTemperaturesFromRawValues()
@@ -683,6 +741,7 @@ static void updateTemperaturesFromRawValues()
         current_temperature[e] = analog2temp(current_temperature_raw[e], e);
     }
     current_temperature_bed = analog2tempBed(current_temperature_bed_raw);
+    current_pneumatic = analog2valPneumatic(current_pneumatic_raw);
     #ifdef TEMP_SENSOR_1_AS_REDUNDANT
       redundant_temperature = analog2temp(redundant_temperature_raw, 1);
     #endif
@@ -727,6 +786,9 @@ void tp_init()
   #endif  
   #if defined(HEATER_BED_PIN) && (HEATER_BED_PIN > -1) 
     SET_OUTPUT(HEATER_BED_PIN);
+  #endif  
+  #if defined(PNEUMATIC_PUMP_PIN) && (PNEUMATIC_PUMP_PIN > -1) 
+    SET_OUTPUT(PNEUMATIC_PUMP_PIN);
   #endif  
   #if defined(FAN_PIN) && (FAN_PIN > -1) 
     SET_OUTPUT(FAN_PIN);
@@ -786,6 +848,13 @@ void tp_init()
        DIDR0 |= 1<<TEMP_BED_PIN; 
     #else
        DIDR2 |= 1<<(TEMP_BED_PIN - 8); 
+    #endif
+  #endif
+  #if defined(PNEUMATIC_PUMP_PIN) && (PNEUMATIC_PUMP_PIN > -1)
+    #if PNEUMATIC_PUMP_PIN < 8
+       DIDR0 |= 1<<PNEUMATIC_PUMP_PIN; 
+    #else
+       DIDR2 |= 1<<(PNEUMATIC_PUMP_PIN - 8); 
     #endif
   #endif
   
@@ -882,6 +951,27 @@ void tp_init()
 #endif //BED_MAXTEMP
 }
 
+#ifdef PNEUMATIC_MIN
+  while(analog2valPneumatic(pneumatic_min_raw) < PNEUMATIC_MIN) {
+#if PNEUMATIC_RAW_LO < PNEUMATIC_RAW_HI
+    pneumatic_min_raw += OVERSAMPLENR;
+#else
+    pneumatic_min_raw -= OVERSAMPLENR;
+#endif
+  }
+
+#endif //PNEUMATIC_MAX
+#ifdef PNEUMATIC_MAX
+  while(analog2valPneumatic(pneumatic_max_raw) > PNEUMATIC_MAX) {
+#if PNEUMATIC_RAW_LO < PNEUMATIC_RAW_HI
+    pneumatic_max_raw -= OVERSAMPLENR;
+#else
+    pneumatic_max_raw += OVERSAMPLENR;
+#endif
+  }
+#endif //PNEUMATIC_MAX
+}
+
 void setWatch() 
 {  
 #ifdef WATCH_TEMP_PERIOD
@@ -933,6 +1023,14 @@ void disable_heater()
       WRITE(HEATER_BED_PIN,LOW);
     #endif
   #endif 
+
+  #if defined(PNEUMATIC_PIN) && PNEUMATIC_PIN > -1
+    target_value_pneumatic=0;
+    soft_pwm_pneumatic=0;
+    #if defined(PNEUMATIC_PUMP_PIN) && PNEUMATIC_PUMP_PIN > -1  
+      WRITE(PNEUMATIC_PUMP_PIN,LOW);
+    #endif
+  #endif 
 }
 
 void max_temp_error(uint8_t e) {
@@ -974,6 +1072,22 @@ void bed_max_temp_error(void) {
   Stop();
   #endif
 }
+
+#if PNEUMATICS
+void pneumatic_value_error(void) {
+#if PNEUMATIC_PUMP_PIN > -1
+  WRITE(PNEUMATIC_PUMP_PIN, 0);
+#endif
+  if(IsStopped() == false) {
+    SERIAL_ERROR_START;
+    SERIAL_ERRORLNPGM("Pressure pump turned off, MAX/MIN value exceeded!!");
+    LCD_ALERTMESSAGEPGM("Err: Pressure value out of range.");
+  }
+  #ifndef BOGUS_TEMPERATURE_FAILSAFE_OVERRIDE
+  Stop();
+  #endif
+}
+#endif
 
 #ifdef HEATER_0_USES_MAX6675
 #define MAX6675_HEAT_INTERVAL 250
@@ -1041,7 +1155,8 @@ ISR(TIMER0_COMPB_vect)
   static unsigned long raw_temp_1_value = 0;
   static unsigned long raw_temp_2_value = 0;
   static unsigned long raw_temp_bed_value = 0;
-  static unsigned char temp_state = 8;
+  static unsigned long raw_pneumatic_value = 0;
+  static unsigned char temp_state = 10;
   static unsigned char pwm_count = (1 << SOFT_PWM_SCALE);
   static unsigned char soft_pwm_0;
   #if (EXTRUDERS > 1) || defined(HEATERS_PARALLEL)
@@ -1052,6 +1167,9 @@ ISR(TIMER0_COMPB_vect)
   #endif
   #if HEATER_BED_PIN > -1
   static unsigned char soft_pwm_b;
+  #endif
+  #if PNEUMATIC_PUMP_PIN > -1
+  static unsigned char soft_pwm_p;
   #endif
   
   if(pwm_count == 0){
@@ -1075,6 +1193,10 @@ ISR(TIMER0_COMPB_vect)
     soft_pwm_b = soft_pwm_bed;
     if(soft_pwm_b > 0) WRITE(HEATER_BED_PIN,1); else WRITE(HEATER_BED_PIN,0);
     #endif
+    #if defined(PNEUMATIC_PUMP_PIN) && PNEUMATIC_PUMP_PIN > -1
+    soft_pwm_p = soft_pwm_pneumatic;
+    if(soft_pwm_p > 0) WRITE(PNEUMATIC_PUMP_PIN,1); else WRITE(PNEUMATIC_PUMP_PIN,0);
+    #endif
     #ifdef FAN_SOFT_PWM
     soft_pwm_fan = fanSpeedSoftPwm / 2;
     if(soft_pwm_fan > 0) WRITE(FAN_PIN,1); else WRITE(FAN_PIN,0);
@@ -1094,6 +1216,9 @@ ISR(TIMER0_COMPB_vect)
   #endif
   #if defined(HEATER_BED_PIN) && HEATER_BED_PIN > -1
   if(soft_pwm_b < pwm_count) WRITE(HEATER_BED_PIN,0);
+  #endif
+  #if defined(PNEUMATIC_PUMP_PIN) && PNEUMATIC_PUMP_PIN > -1
+  if(soft_pwm_p < pwm_count) WRITE(PNEUMATIC_PUMP_PIN,0);
   #endif
   #ifdef FAN_SOFT_PWM
   if(soft_pwm_fan < pwm_count) WRITE(FAN_PIN,0);
@@ -1144,7 +1269,26 @@ ISR(TIMER0_COMPB_vect)
       #endif
       temp_state = 4;
       break;
-    case 4: // Prepare TEMP_1
+    case 4: // Prepare PNEUMATIC
+      #if defined(PNEUMATIC_PIN) && (PNEUMATIC_PIN > -1)
+        #if PNEUMATIC_PIN  > 7
+          ADCSRB = 1<<MUX5;
+        #else
+          ADCSRB = 0;
+        #endif
+        ADMUX = ((1 << REFS0) | (PNEUMATIC_PIN & 0x07));
+        ADCSRA |= 1<<ADSC; // Start conversion
+      #endif
+      lcd_buttons_update();
+      temp_state = 5;
+      break;
+    case 5: // Measure PNEUMATIC
+      #if defined(TEMP_BED_PIN) && (TEMP_BED_PIN > -1)
+        raw_pneumatic_value += ADC;
+      #endif
+      temp_state = 6;
+      break;
+    case 6: // Prepare TEMP_1
       #if defined(TEMP_1_PIN) && (TEMP_1_PIN > -1)
         #if TEMP_1_PIN > 7
           ADCSRB = 1<<MUX5;
@@ -1155,15 +1299,15 @@ ISR(TIMER0_COMPB_vect)
         ADCSRA |= 1<<ADSC; // Start conversion
       #endif
       lcd_buttons_update();
-      temp_state = 5;
+      temp_state = 7;
       break;
-    case 5: // Measure TEMP_1
+    case 7: // Measure TEMP_1
       #if defined(TEMP_1_PIN) && (TEMP_1_PIN > -1)
         raw_temp_1_value += ADC;
       #endif
-      temp_state = 6;
+      temp_state = 8;
       break;
-    case 6: // Prepare TEMP_2
+    case 8: // Prepare TEMP_2
       #if defined(TEMP_2_PIN) && (TEMP_2_PIN > -1)
         #if TEMP_2_PIN > 7
           ADCSRB = 1<<MUX5;
@@ -1174,16 +1318,16 @@ ISR(TIMER0_COMPB_vect)
         ADCSRA |= 1<<ADSC; // Start conversion
       #endif
       lcd_buttons_update();
-      temp_state = 7;
+      temp_state = 9;
       break;
-    case 7: // Measure TEMP_2
+    case 9: // Measure TEMP_2
       #if defined(TEMP_2_PIN) && (TEMP_2_PIN > -1)
         raw_temp_2_value += ADC;
       #endif
-      temp_state = 0;
+      temp_state = 10;
       temp_count++;
       break;
-    case 8: //Startup, delay initial temp reading a tiny bit so the hardware can settle.
+    case 10: //Startup, delay initial temp reading a tiny bit so the hardware can settle.
       temp_state = 0;
       break;
 //    default:
@@ -1207,6 +1351,7 @@ ISR(TIMER0_COMPB_vect)
       current_temperature_raw[2] = raw_temp_2_value;
 #endif
       current_temperature_bed_raw = raw_temp_bed_value;
+      current_pneumatic_raw = raw_pneumatic_value;
     }
     
     temp_meas_ready = true;
@@ -1215,6 +1360,7 @@ ISR(TIMER0_COMPB_vect)
     raw_temp_1_value = 0;
     raw_temp_2_value = 0;
     raw_temp_bed_value = 0;
+    raw_pneumatic_value = 0;
 
 #if HEATER_0_RAW_LO_TEMP > HEATER_0_RAW_HI_TEMP
     if(current_temperature_raw[0] <= maxttemp_raw[0]) {
@@ -1275,6 +1421,17 @@ ISR(TIMER0_COMPB_vect)
     }
 #endif
   }
+
+#if PNEUMATICS
+    if(current_temperature_raw[2] >= maxttemp_raw[2]) {
+        target_value_pneumatic = 0;
+        pneumatic_value_error();
+    }
+    if(current_temperature_raw[2] <= minttemp_raw[2]) {
+        target_value_pneumatic = 0;
+        pneumatic_value_error();
+    }
+#endif
   
 #ifdef BABYSTEPPING
   for(uint8_t axis=0;axis<3;axis++)
@@ -1321,5 +1478,3 @@ float unscalePID_d(float d)
 }
 
 #endif //PIDTEMP
-
-
