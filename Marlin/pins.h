@@ -2232,8 +2232,7 @@ DaveX plan for Teensylu/printrboard-type pinouts (ref teensylu & sprinter) for a
 #ifdef PNEUMATICS
     #define PNEUMATIC_PUMP_PIN 7
     #define PNEUMATIC_PIN 3         // A3 for pressure sensor
-    //FIXME: We should be able to set HEATER_1_PIN to -1 to disable it but that causes compile errors.
-    //#define HEATER_1_PIN -1         // Heat_1 Output Used for Pneumatics
+    #define HEATER_1_PIN -1         // Heat_1 Output Used for Pneumatics
     #define TEMP_1_PIN -1        
 #else
     #define HEATER_1_PIN 7
