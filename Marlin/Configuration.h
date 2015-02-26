@@ -137,7 +137,7 @@
 #define TEMP_SENSOR_0 1
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
-#define TEMP_SENSOR_BED 1000 //we are treating the pressure sensor as a bed temp sensor.
+#define TEMP_SENSOR_BED 0
 
 // This makes temp sensor 1 a redundant sensor for sensor 0. If the temperatures difference between these sensors is to high the print will be aborted.
 //#define TEMP_SENSOR_1_AS_REDUNDANT
@@ -154,7 +154,7 @@
 #define HEATER_0_MINTEMP 5
 #define HEATER_1_MINTEMP 5
 #define HEATER_2_MINTEMP 5
-#define BED_MINTEMP -1 // 0 pressure is a valid reading
+#define BED_MINTEMP 5 // 0 pressure is a valid reading
 
 // When temperature exceeds max temp, your heater will be switched off.
 // This feature exists to protect your hotend from overheating accidentally, but *NOT* from thermistor short/failure!
@@ -162,7 +162,7 @@
 #define HEATER_0_MAXTEMP 500
 #define HEATER_1_MAXTEMP 500
 #define HEATER_2_MAXTEMP 500
-#define BED_MAXTEMP 500
+#define BED_MAXTEMP 150
 
 // If your bed has low resistance e.g. .6 ohm and throws the fuse you can duty cycle it to reduce the
 // average current. The value should be an integer and the heat bed will be turned on for 1 interval of
@@ -260,6 +260,33 @@
 
 #define EXTRUDE_MINTEMP 170
 #define EXTRUDE_MAXLENGTH (X_MAX_LENGTH+Y_MAX_LENGTH) //prevent extrusion of very large distances.
+
+//===========================================================================
+//=============================Pneumatics Settings===========================
+//===========================================================================
+
+// Define this if you are using pneumatic direct write on the RAMBo AND you are not
+// using HEAT_1 output
+#define PNEUMATICS
+
+#ifdef PNEUMATICS
+
+// Set Pressure Sensor Type HERE:
+// -----------------------------
+// 0 - No Pressure Sensor
+// 1 - Kavlico P255-50G-D1A
+// 2 - American Sensor Tech. 4100 Series (1-5V output)
+//
+
+  #define PNEUMATIC_SENSOR 1
+  
+  // 0 is a valid pressure reading
+  #define PNEUMATIC_MIN -1
+  
+  // If the pressure goes above this value the pump will be turned off. This prevents
+  // the tank from being overpressurized.
+  #define PNEUMATIC_MAX 500
+#endif
 
 //===========================================================================
 //=============================Mechanical Settings===========================
