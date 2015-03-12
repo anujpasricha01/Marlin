@@ -134,7 +134,7 @@
 // 110 is Pt100 with 1k pullup (non standard)
 // 70 is 500C thermistor for Pico hot end
 
-#define TEMP_SENSOR_0 5
+#define TEMP_SENSOR_0 1
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_BED 1000 //we are treating the pressure sensor as a bed temp sensor.
@@ -189,9 +189,9 @@
 
 // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 //V8 Gen2 w/pico
-//    #define  DEFAULT_Kp 22.2
-//    #define  DEFAULT_Ki 1.08
-//    #define  DEFAULT_Kd 114
+    #define  DEFAULT_Kp 22.2
+    #define  DEFAULT_Ki 1.08
+    #define  DEFAULT_Kd 114
 
 //V8 Gen2 w/orion and 2x 12V 40W heaters
 //    #define  DEFAULT_Kp 15.81
@@ -199,9 +199,9 @@
 //    #define  DEFAULT_Kd 65.54   
 
 //V8 Gen2 w/actuating hotend
-    #define  DEFAULT_Kp 4.00
-    #define  DEFAULT_Ki 0.85
-    #define  DEFAULT_Kd 300.00  
+//    #define  DEFAULT_Kp 4.00
+//    #define  DEFAULT_Ki 0.85
+//    #define  DEFAULT_Kd 300.00  
 
 // MakerGear
 //    #define  DEFAULT_Kp 7.0
@@ -461,10 +461,10 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // Syncromesh (400*16)/(3.81*15)
 //e motor 200 steps/mm, 1/16th microstepping, 8.97mm diameter toothed extruder part
 //z motor 200 steps/revolution, 2mm/revolution, 1/4th microstepping
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {88.88888888888889,88.88888888888889,400,202}  // default steps per unit for Ultimaker
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {88.88888888888889,88.88888888888889,400,457}  // default steps per unit for Ultimaker
 #define DEFAULT_MAX_FEEDRATE          {600, 600, 25, 600}    // (mm/sec)
 #define DEFAULT_MAX_ACCELERATION      {6000,6000,100,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
-#define DEFAULT_ACCELERATION          2500    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
+#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E max acceleration in mm/s^2 for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  3000   // X, Y, Z and E max acceleration in mm/s^2 for retracts
 
 // Offset of the extruders (uncomment if using more than one and relying on firmware to position when changing).
