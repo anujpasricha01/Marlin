@@ -134,7 +134,7 @@
 // 110 is Pt100 with 1k pullup (non standard)
 // 70 is 500C thermistor for Pico hot end
 
-#define TEMP_SENSOR_0 1
+#define TEMP_SENSOR_0 5
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_BED 1000 //we are treating the pressure sensor as a bed temp sensor.
@@ -189,9 +189,9 @@
 
 // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 //V8 Gen2 w/pico
-    #define  DEFAULT_Kp 22.2
-    #define  DEFAULT_Ki 1.08
-    #define  DEFAULT_Kd 114
+//    #define  DEFAULT_Kp 22.2
+//    #define  DEFAULT_Ki 1.08
+//    #define  DEFAULT_Kd 114
 
 //V8 Gen2 w/orion and 2x 12V 40W heaters
 //    #define  DEFAULT_Kp 15.81
@@ -201,7 +201,12 @@
 //V8 Gen2 w/actuating hotend
 //    #define  DEFAULT_Kp 4.00
 //    #define  DEFAULT_Ki 0.85
-//    #define  DEFAULT_Kd 300.00  
+//    #define  DEFAULT_Kd 300.00 
+
+//V8 Gen2 w/d3d no ac hotend
+    #define  DEFAULT_Kp 9.39
+    #define  DEFAULT_Ki 0.25
+    #define  DEFAULT_Kd 88.80  
 
 // MakerGear
 //    #define  DEFAULT_Kp 7.0
