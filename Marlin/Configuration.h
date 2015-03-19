@@ -204,9 +204,9 @@
 //    #define  DEFAULT_Kd 300.00 
 
 //V8 Gen2 w/d3d no ac hotend
-    #define  DEFAULT_Kp 9.39
-    #define  DEFAULT_Ki 0.25
-    #define  DEFAULT_Kd 88.80  
+    #define  DEFAULT_Kp 9.04
+    #define  DEFAULT_Ki 0.22
+    #define  DEFAULT_Kd 93.17
 
 // MakerGear
 //    #define  DEFAULT_Kp 7.0
