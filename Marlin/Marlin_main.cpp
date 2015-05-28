@@ -1060,7 +1060,7 @@ static void axis_is_at_home(AxisEnum axis) {
   #endif
   {
     current_position[axis] = base_home_pos(axis)
-    #ifndef BABYSTEPPING
+    #ifndef BABYSTEP_OFFSET
       + home_offset[axis]
     #endif
     ;
