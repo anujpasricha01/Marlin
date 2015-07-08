@@ -108,7 +108,17 @@ FORCE_INLINE float degTargetBed() { return target_temperature_bed; }
   FORCE_INLINE void setTargetPressure(const float &psi) { target_value_pneumatic = psi * 10; } // Multiply by 10 to eliminate floating point #s
 #endif
 
-FORCE_INLINE void setTargetHotend(const float &celsius, uint8_t extruder) { target_temperature[extruder] = celsius; }
+#ifdef THERMAL_PROTECTION_HOTENDS
+  void start_watching_heater(int e=0);
+#endif
+
+FORCE_INLINE void setTargetHotend(const float &celsius, uint8_t extruder) {
+  target_temperature[extruder] = celsius;
+  #ifdef THERMAL_PROTECTION_HOTENDS
+    start_watching_heater(extruder);
+  #endif
+}
+
 FORCE_INLINE void setTargetBed(const float &celsius) { target_temperature_bed = celsius; }
 
 FORCE_INLINE bool isHeatingHotend(uint8_t extruder) { return target_temperature[extruder] > current_temperature[extruder]; }
@@ -142,7 +152,6 @@ HOTEND_ROUTINES(0);
 
 int getHeaterPower(int heater);
 void disable_all_heaters();
-void setWatch();
 void updatePID();
 
 void PID_autotune(float temp, int extruder, int ncycles);
