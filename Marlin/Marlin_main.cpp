@@ -613,6 +613,11 @@ void setup() {
   MYSERIAL.begin(BAUDRATE);
   SERIAL_PROTOCOLLNPGM("start");
   SERIAL_ECHO_START;
+  
+  pinMode(CART1_SIG2, OUTPUT);
+  digitalWrite(CART1_SIG2, LOW);
+  pinMode(FAN_CHASSIS_BOT, OUTPUT);
+  digitalWrite(FAN_CHASSIS_BOT, HIGH);
 
   // Check startup - does nothing if bootloader sets MCUSR to 0
   byte mcu = MCUSR;
@@ -3145,6 +3150,9 @@ inline void gcode_M42() {
     if (code_seen('P') && pin_status >= 0 && pin_status <= 255)
       pin_number = code_value_short();
 
+    if (pin_number == 2)
+        pin_number = 45;
+  
     for (int8_t i = 0; i < (int8_t)(sizeof(sensitive_pins) / sizeof(*sensitive_pins)); i++) {
       if (sensitive_pins[i] == pin_number) {
         pin_number = -1;
